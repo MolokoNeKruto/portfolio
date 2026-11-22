@@ -1,20 +1,17 @@
-import type { ViewState } from './render'
+import type { SceneId, ViewState } from './render'
+import { SCENES } from './render'
 import { initPosterDemo } from './posterDemo'
 import { initTypeDemo } from './typeDemo'
 
 interface Handlers {
   onLang: (lang: 'ru' | 'en') => void
   onTheme: (theme: 'dark' | 'light') => void
+  onScene: (scene: SceneId) => void
 }
 
-export function initInteractions(root: HTMLElement, state: ViewState, handlers: Handlers): void {
-  // nav scroll
-  const nav = document.getElementById('nav')
-  const onScroll = () => nav?.classList.toggle('scrolled', window.scrollY > 24)
-  onScroll()
-  window.addEventListener('scroll', onScroll, { passive: true })
+export function initInteractions(root: HTMLElement, state: ViewState, handlers: Handlers): () => void {
+  const cleanups: Array<() => void> = []
 
-  // lang/theme
   root.querySelector('[data-lang-switch]')?.addEventListener('click', () => {
     handlers.onLang(state.lang === 'ru' ? 'en' : 'ru')
   })
@@ -22,61 +19,93 @@ export function initInteractions(root: HTMLElement, state: ViewState, handlers: 
     handlers.onTheme(state.theme === 'dark' ? 'light' : 'dark')
   })
 
-  // anchor nav
-  root.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((a) => {
-    a.addEventListener('click', (e) => {
-      const id = a.getAttribute('href')
-      if (!id || id === '#') return
-      const el = document.querySelector(id)
-      if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth', block: 'start' }); history.pushState(null, '', id) }
+  root.querySelectorAll<HTMLElement>('[data-scene]').forEach((el) => {
+    el.addEventListener('click', () => {
+      const s = el.dataset.scene as SceneId | undefined
+      if (s && (SCENES as string[]).includes(s)) handlers.onScene(s)
     })
   })
 
-  // active nav
-  const sections = ['work', 'about', 'contact']
-  const navLinks = Array.from(root.querySelectorAll<HTMLAnchorElement>('[data-nav]'))
-  const io = new IntersectionObserver((entries) => {
-    for (const e of entries) {
-      if (e.isIntersecting) {
-        navLinks.forEach((l) => l.classList.toggle('active', l.dataset.nav === e.target.id))
+  // wheel / trackpad scene navigation (throttled)
+  let wheelLock = 0
+  const onWheel = (e: WheelEvent) => {
+    const target = e.target as HTMLElement | null
+    if (target?.closest('input, textarea, [data-demo-controls], .panel')) {
+      // allow scroll inside panel/demo controls; only switch when panel can't scroll
+      const panel = target.closest('.panel') as HTMLElement | null
+      if (panel) {
+        const canScroll = panel.scrollHeight > panel.clientHeight + 4
+        if (canScroll) {
+          const atTop = panel.scrollTop <= 0
+          const atBottom = panel.scrollTop + panel.clientHeight >= panel.scrollHeight - 2
+          if (!(atTop && e.deltaY < 0) && !(atBottom && e.deltaY > 0)) return
+        }
       }
+      if (target.closest('[data-demo-controls]')) return
     }
-  }, { rootMargin: '-30% 0px -60% 0px' })
-  sections.forEach((id) => { const el = document.getElementById(id); if (el) io.observe(el) })
-
-  // reveal
-  const reveals = Array.from(root.querySelectorAll<HTMLElement>('.reveal'))
-  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const rio = new IntersectionObserver((entries) => {
-      for (const e of entries) { if (e.isIntersecting) { e.target.classList.add('visible'); rio.unobserve(e.target) } }
-    }, { threshold: 0.12 })
-    reveals.forEach((el) => rio.observe(el))
-  } else {
-    reveals.forEach((el) => el.classList.add('visible'))
+    if (Math.abs(e.deltaY) < 30) return
+    const now = Date.now()
+    if (now - wheelLock < 900) return
+    wheelLock = now
+    const idx = SCENES.indexOf(state.scene)
+    const dir = e.deltaY > 0 ? 1 : -1
+    const next = SCENES[(idx + dir + SCENES.length) % SCENES.length]
+    handlers.onScene(next)
   }
+  window.addEventListener('wheel', onWheel, { passive: true })
+  cleanups.push(() => window.removeEventListener('wheel', onWheel))
 
-  // live demos
-  initPosterDemo(root)
-  initTypeDemo(root)
-
-  // signal mode buttons (signal scene reads data attr)
-  root.querySelectorAll<HTMLButtonElement>('[data-signal]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      root.querySelectorAll('[data-signal]').forEach((b) => b.classList.remove('active'))
-      btn.classList.add('active')
-      const canvas = document.getElementById('signal-canvas')
-      if (canvas) canvas.dataset.mode = btn.dataset.signal || 'mesh'
-    })
-  })
-
-  // pause videos out of view
-  const videos = Array.from(root.querySelectorAll<HTMLVideoElement>('video'))
-  const vio = new IntersectionObserver((entries) => {
-    for (const e of entries) {
-      const v = e.target as HTMLVideoElement
-      if (e.isIntersecting) v.play().catch(() => {})
-      else v.pause()
+  // keyboard navigation
+  const onKey = (e: KeyboardEvent) => {
+    const tag = (e.target as HTMLElement | null)?.tagName
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || (e.target as HTMLElement | null)?.isContentEditable) return
+    const idx = SCENES.indexOf(state.scene)
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown') {
+      e.preventDefault(); handlers.onScene(SCENES[(idx + 1) % SCENES.length])
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
+      e.preventDefault(); handlers.onScene(SCENES[(idx - 1 + SCENES.length) % SCENES.length])
+    } else if (e.key === 'Home') {
+      e.preventDefault(); handlers.onScene('home')
+    } else if (e.key === 'End') {
+      e.preventDefault(); handlers.onScene(SCENES[SCENES.length - 1])
     }
-  }, { threshold: 0.1 })
-  videos.forEach((v) => vio.observe(v))
+  }
+  window.addEventListener('keydown', onKey)
+  cleanups.push(() => window.removeEventListener('keydown', onKey))
+
+  // touch swipe
+  let touchY = 0
+  let touchX = 0
+  const onTouchStart = (e: TouchEvent) => {
+    const t = e.touches[0]
+    if (!t) return
+    touchY = t.clientY
+    touchX = t.clientX
+  }
+  const onTouchEnd = (e: TouchEvent) => {
+    const t = e.changedTouches[0]
+    if (!t) return
+    const target = e.target as HTMLElement | null
+    if (target?.closest('input, textarea, [data-demo-controls], #poster-canvas, #type-canvas, .glass-preview')) return
+    const dy = touchY - t.clientY
+    const dx = touchX - t.clientX
+    const ady = Math.abs(dy)
+    const adx = Math.abs(dx)
+    if (Math.max(ady, adx) < 45) return
+    const idx = SCENES.indexOf(state.scene)
+    if (ady > adx) {
+      handlers.onScene(SCENES[(idx + (dy > 0 ? 1 : -1) + SCENES.length) % SCENES.length])
+    } else {
+      handlers.onScene(SCENES[(idx + (dx > 0 ? 1 : -1) + SCENES.length) % SCENES.length])
+    }
+  }
+  window.addEventListener('touchstart', onTouchStart, { passive: true })
+  window.addEventListener('touchend', onTouchEnd, { passive: true })
+  cleanups.push(() => { window.removeEventListener('touchstart', onTouchStart); window.removeEventListener('touchend', onTouchEnd) })
+
+  // demos
+  if (state.scene === 'poster-lab') cleanups.push(initPosterDemo(root))
+  if (state.scene === 'type-machine') cleanups.push(initTypeDemo(root))
+
+  return () => { for (const c of cleanups) c() }
 }

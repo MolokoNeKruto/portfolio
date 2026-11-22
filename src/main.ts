@@ -1,40 +1,82 @@
 import './styles/global.css'
-import { renderApp, type ViewState } from './ui/render'
+import { renderApp, SCENES, type SceneId, type ViewState } from './ui/render'
 import { initInteractions } from './ui/interactions'
-import { initHeroScene } from './scene/heroScene'
-import { initSignalScene } from './scene/signalScene'
+import { initHeroScene, type HeroSceneController } from './scene/heroScene'
 
 const appEl = document.querySelector<HTMLDivElement>('#app')
 if (!appEl) throw new Error('#app not found')
 const app: HTMLDivElement = appEl
 
+function parseScene(hash: string): SceneId {
+  const raw = hash.replace(/^#\/?/, '') as SceneId
+  return (SCENES as string[]).includes(raw) ? raw : 'home'
+}
+
 const state: ViewState = {
   lang: (localStorage.getItem('gs-lang') as 'ru' | 'en') || 'ru',
   theme: (localStorage.getItem('gs-theme') as 'dark' | 'light') || 'dark',
+  scene: parseScene(location.hash),
 }
 
-let cleanupHero: (() => void) | null = null
+let scene: HeroSceneController | null = null
+let cleanupInteractions: (() => void) | null = null
 
-function applyState() {
+function applyState(): void {
   document.documentElement.lang = state.lang
   document.documentElement.dataset.theme = state.theme
   document.title = state.lang === 'ru'
     ? 'Георгий Сушинский — портфолио'
     : 'Georgiy Sushinsky — Portfolio'
   const meta = document.querySelector('meta[name="theme-color"]')
-  if (meta) meta.setAttribute('content', state.theme === 'dark' ? '#0b0b0c' : '#f3f0e8')
+  if (meta) meta.setAttribute('content', state.theme === 'dark' ? '#09090b' : '#f5f1e8')
 }
 
-function mount() {
-  if (cleanupHero) { cleanupHero(); cleanupHero = null }
-  applyState()
-  renderApp(app, state)
-  initInteractions(app, state, {
-    onLang: (lang) => { state.lang = lang; localStorage.setItem('gs-lang', lang); mount() },
-    onTheme: (theme) => { state.theme = theme; localStorage.setItem('gs-theme', theme); mount() },
-  })
-  cleanupHero = initHeroScene(document.querySelector<HTMLCanvasElement>('#hero-canvas'))
-  initSignalScene(document.querySelector<HTMLCanvasElement>('#signal-canvas'))
+function syncHash(): void {
+  const want = `#${state.scene}`
+  if (location.hash !== want) history.replaceState(null, '', want)
 }
+
+function mount(): void {
+  cleanupInteractions?.()
+  cleanupInteractions = null
+  applyState()
+  syncHash()
+  renderApp(app, state)
+
+  const canvas = document.querySelector<HTMLCanvasElement>('#bg-canvas')
+  if (!scene) {
+    scene = initHeroScene(canvas, state)
+  } else {
+    scene.attach(canvas)
+    scene.setTheme(state.theme)
+    scene.setScene(state.scene)
+  }
+
+  cleanupInteractions = initInteractions(app, state, {
+    onLang: (lang) => { state.lang = lang; localStorage.setItem('gs-lang', lang); mount() },
+    onTheme: (theme) => {
+      state.theme = theme
+      localStorage.setItem('gs-theme', theme)
+      applyState()
+      const btn = app.querySelector('[data-theme-switch]')
+      if (btn) btn.textContent = theme === 'dark' ? '☀' : '☾'
+      scene?.setTheme(theme)
+    },
+    onScene: (next) => {
+      if (state.scene === next) return
+      state.scene = next
+      syncHash()
+      mount()
+    },
+  })
+}
+
+window.addEventListener('hashchange', () => {
+  const next = parseScene(location.hash)
+  if (next !== state.scene) {
+    state.scene = next
+    mount()
+  }
+})
 
 mount()

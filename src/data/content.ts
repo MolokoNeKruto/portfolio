@@ -8,8 +8,6 @@ export interface CaseItem {
   kind: { ru: string; en: string }
   description: { ru: string; en: string }
   stack: string[]
-  media: string
-  poster: string
   link?: string
   linkLabel?: { ru: string; en: string }
 }
@@ -27,116 +25,95 @@ export const site = {
   telegramLabel: '@DornegE',
   github: 'https://github.com/MolokoNeKruto',
   githubLabel: 'MolokoNeKruto',
-  support: 'https://boosty.to',
 }
 
 export const ui = {
   nav: {
+    home: { ru: 'Старт', en: 'Home' },
     work: { ru: 'Проекты', en: 'Work' },
     about: { ru: 'Обо мне', en: 'About' },
     contact: { ru: 'Контакт', en: 'Contact' },
   },
   hero: {
-    status: { ru: 'Открыт к задачам', en: 'Available for work' },
-    title1: { ru: 'ДЕЛАЮ', en: 'I BUILD' },
-    title2: { ru: 'ИНТЕРФЕЙСЫ,', en: 'INTERFACES,' },
-    title3: { ru: 'КОТОРЫЕ', en: 'THAT' },
-    title4: { ru: 'ХОЧЕТСЯ ТРОГАТЬ', en: 'WANT TO BE TOUCHED' },
-    lead: {
-      ru: 'Георгий Сушинский. Проектирую и собираю цифровые вещи: от плагинов и интерфейсных систем до интерактивных сцен. Здесь не рассказ о проектах — сами проекты.',
-      en: 'Georgiy Sushinsky. I design and build digital things: from plugins and interface systems to interactive scenes. Not stories about projects — the projects themselves.',
+    status: { ru: 'Открыт к проектам', en: 'Open for projects' },
+    title: {
+      ru: ['Делаю', 'интерфейсы,', 'которые', 'ощущаются'],
+      en: ['I build', 'interfaces', 'that', 'feel alive'],
     },
-    scroll: { ru: 'Скролл', en: 'Scroll' },
+    lead: {
+      ru: 'Георгий Сушинский — дизайнер и фронтенд-разработчик. Живые проекты, а не скриншоты.',
+      en: 'Georgiy Sushinsky — designer and frontend developer. Live projects, not screenshots.',
+    },
+    hint: { ru: 'Колесо / свайп / стрелки', en: 'Wheel / swipe / arrows' },
   },
   work: {
-    label: { ru: 'Избранное', en: 'Selected work' },
-    title: { ru: 'ПРОЕКТЫ', en: 'PROJECTS' },
-    hint: { ru: 'Каждый проект — живой. Наведи, покрути, потяни.', en: 'Every project is live. Hover, drag, interact.' },
+    label: { ru: 'Проект', en: 'Project' },
+    open: { ru: 'Открыть', en: 'Open' },
   },
   about: {
-    label: { ru: 'Резюме', en: 'Resume' },
-    title: { ru: 'НЕ ПРО СЛОВА', en: 'NOT ABOUT WORDS' },
-    body: {
-      ru: 'Мне интересно, когда интерфейс — это не набор карточек, а вещь с характером. Я работаю на стыке дизайна и кода: рисую, собираю, анимирую, довожу до состояния, в котором всё нажимается и движется как надо. Люблю сложную графику, странные композиции и аккуратную реализацию.',
-      en: 'I care about interfaces that feel like objects, not card grids. I work between design and code: sketch, build, animate, and polish until everything clicks and moves right. I like heavy graphics, odd compositions, and clean implementation.',
+    label: { ru: 'Обо мне', en: 'About' },
+    title: { ru: 'Кто за этим стоит', en: 'The person behind it' },
+    p1: {
+      ru: 'Мне нравится делать вещи, которые приятно трогать. Типографика, движение и код работают вместе.',
+      en: 'I like making things that feel good to touch. Typography, motion, and code work together.',
     },
-    skills: {
-      ru: ['TypeScript', 'WebGL / Three.js', 'GSAP', 'CSS / дизайн-системы', 'Figma', 'Blender / рендер', 'UI-прототипирование'],
-      en: ['TypeScript', 'WebGL / Three.js', 'GSAP', 'CSS / design systems', 'Figma', 'Blender / render', 'UI prototyping'],
+    p2: {
+      ru: 'Делаю интерфейсы, сайты, плагины и визуальные инструменты — от идеи до рабочего результата.',
+      en: 'I make interfaces, websites, plugins, and visual tools — from idea to a working result.',
     },
   },
   contact: {
-    label: { ru: 'Связаться', en: 'Contact' },
-    title: { ru: 'СДЕЛАЕМ ЧТО-ТО', en: "LET'S MAKE SOMETHING" },
-    title2: { ru: 'НЕНУДНОЕ', en: 'NOT BORING' },
-    mail: { ru: 'Почта', en: 'Email' },
-    tg: { ru: 'Телеграм', en: 'Telegram' },
-    gh: { ru: 'Гитхаб', en: 'GitHub' },
-    support: { ru: 'Поддержать (демо)', en: 'Support (demo)' },
-    supportNote: { ru: 'Демо-ссылка, без адресата.', en: 'Demo link, no recipient.' },
-  },
-  footer: {
-    made: { ru: 'Собрано руками, не шаблоном', en: 'Built by hand, not template' },
+    label: { ru: 'Контакт', en: 'Contact' },
+    title: { ru: 'Давайте сделаем что-то', en: "Let's make something" },
+    lead: {
+      ru: 'Открыт к интересным проектам и коллаборациям. Пишите в Telegram или на почту.',
+      en: 'Open to interesting projects and collaborations. Reach out on Telegram or by email.',
+    },
   },
 }
 
 export const cases: CaseItem[] = [
   {
-    id: 'glassmorphism',
-    index: '01',
-    year: '2025',
-    title: { ru: 'Glassmorphism v2', en: 'Glassmorphism v2' },
-    kind: { ru: 'Плагин для OpenCode Desktop', en: 'OpenCode Desktop plugin' },
-    description: {
-      ru: 'Настоящий плагин: стеклянные поверхности, обои, шрифты, экранная клавиатура, эмодзи и переключаемые модули. Не мокап — рабочая вещь.',
-      en: 'A real plugin: glass surfaces, wallpapers, fonts, on-screen keyboard, emoji, and toggleable modules. Not a mockup — a working thing.',
-    },
-    stack: ['TypeScript', 'CSS', 'OpenCode'],
-    media: '/media/glass.mp4',
-    poster: '/media/glass-poster.jpg',
-    link: 'https://github.com/MolokoNeKruto',
-    linkLabel: { ru: 'GitHub', en: 'GitHub' },
-  },
-  {
     id: 'poster-lab',
-    index: '02',
+    index: '01',
     year: '2026',
     title: { ru: 'POSTER LAB', en: 'POSTER LAB' },
-    kind: { ru: 'Интерактивный генератор плакатов', en: 'Interactive poster generator' },
+    kind: { ru: 'Интерактивный редактор', en: 'Interactive editor' },
     description: {
-      ru: 'Живой инструмент прямо на странице: меняй типографику, сетку, шум и цвет — получай плакат. Это не скриншот, это работает.',
-      en: 'A live tool right on the page: change type, grid, noise, and color — get a poster. Not a screenshot, it works.',
+      ru: 'Редактор плакатов прямо в браузере: текст, сетка, шум, акцент, экспорт PNG. Не демо — инструмент.',
+      en: 'A poster editor in the browser: text, grid, noise, accent, PNG export. Not a demo — a tool.',
     },
-    stack: ['Canvas', 'Type', 'Generative'],
-    media: '/media/poster.mp4',
-    poster: '/media/poster-poster.jpg',
-  },
-  {
-    id: 'signal',
-    index: '03',
-    year: '2026',
-    title: { ru: 'SIGNAL', en: 'SIGNAL' },
-    kind: { ru: 'Аудио-реактивная сцена', en: 'Audio-reactive scene' },
-    description: {
-      ru: '3D-объект, который реагирует на звук и движение мыши. Включи микрофон или просто води курсором — сцена отвечает.',
-      en: 'A 3D object reacting to sound and mouse movement. Enable mic or just move cursor — the scene responds.',
-    },
-    stack: ['WebGL', 'Audio', 'Shader'],
-    media: '/media/signal.mp4',
-    poster: '/media/signal-poster.jpg',
+    stack: ['Canvas', 'Typography', 'Export', 'UI'],
   },
   {
     id: 'type-machine',
-    index: '04',
+    index: '02',
     year: '2026',
     title: { ru: 'TYPE MACHINE', en: 'TYPE MACHINE' },
-    kind: { ru: 'Кинетическая типографика', en: 'Kinetic typography' },
+    kind: { ru: 'Типографическая физика', en: 'Typographic physics' },
     description: {
-      ru: 'Печатай — и буквы становятся физикой. Тяни, бросай, ломай строку. Маленькая машина для игры со шрифтом.',
-      en: 'Type — and letters become physics. Drag, throw, break the line. A small machine for playing with type.',
+      ru: 'Печатай, бросай, включай гравитацию, меняй размер. Буквы — живые объекты, а не картинка.',
+      en: 'Type, throw, toggle gravity, change size. Letters are live objects, not a picture.',
     },
-    stack: ['Matter.js', 'Type', 'Interactive'],
-    media: '/media/type.mp4',
-    poster: '/media/type-poster.jpg',
+    stack: ['Canvas', 'Physics', 'Typography', 'Play'],
   },
+  {
+    id: 'glassmorphism',
+    index: '03',
+    year: '2026',
+    title: { ru: 'GLASSMORPHISM V2', en: 'GLASSMORPHISM V2' },
+    kind: { ru: 'Расширение VS Code', en: 'VS Code Extension' },
+    description: {
+      ru: 'Рабочий плагин для VS Code: стеклянные поверхности, обои, шрифты, клавиатура и модули.',
+      en: 'A working VS Code plugin: glass surfaces, wallpapers, fonts, keyboard, and modules.',
+    },
+    stack: ['TypeScript', 'VS Code API', 'CSS'],
+    link: 'https://github.com/MolokoNeKruto/Glassmorphism-V2',
+    linkLabel: { ru: 'GitHub', en: 'GitHub' },
+  },
+]
+
+export const skills = [
+  'Figma', 'TypeScript', 'React', 'Three.js', 'WebGL / GLSL',
+  'Canvas', 'Motion', 'UI Design', 'Design Systems', 'Prototyping',
 ]
