@@ -2,267 +2,141 @@ export type Lang = 'ru' | 'en'
 
 export interface CaseItem {
   id: string
-  number: string
-  kind: 'real' | 'concept'
+  index: string
+  year: string
   title: { ru: string; en: string }
-  subtitle: { ru: string; en: string }
-  summary: { ru: string; en: string }
-  role: { ru: string; en: string }
-  points: { ru: string[]; en: string[] }
-  tags: string[]
+  kind: { ru: string; en: string }
+  description: { ru: string; en: string }
+  stack: string[]
+  media: string
+  poster: string
+  link?: string
+  linkLabel?: { ru: string; en: string }
 }
 
 export const site = {
-  owner: {
-    name: 'Георгий Сушинский',
-    roles: {
-      ru: 'Дизайнер интерфейсов · Фронтенд-разработчик · Автор визуальных экспериментов',
-      en: 'Interface designer · Front-end developer · Visual experiment author',
-    },
+  name: 'Георгий Сушинский',
+  short: 'GS',
+  role: {
+    ru: 'Дизайн интерфейсов / фронтенд / визуальные эксперименты',
+    en: 'Interface design / frontend / visual experiments',
   },
-  contacts: {
-    email: 'georgiminivi@gmail.com',
-    emailHref: 'mailto:georgiminivi@gmail.com',
-    telegramLabel: '@DornegE',
-    telegramHref: 'https://t.me/DornegE',
-    githubLabel: 'github.com/MolokoNeKruto',
-    githubHref: 'https://github.com/MolokoNeKruto',
-    supportHref: 'https://boosty.to',
-  },
+  location: { ru: 'Россия · удалённо', en: 'Russia · remote' },
+  email: 'georgiminivi@gmail.com',
+  telegram: 'https://t.me/DornegE',
+  telegramLabel: '@DornegE',
+  github: 'https://github.com/MolokoNeKruto',
+  githubLabel: 'MolokoNeKruto',
+  support: 'https://boosty.to',
 }
 
 export const ui = {
-  skip: { ru: 'Перейти к содержанию', en: 'Skip to content' },
   nav: {
-    hero: { ru: 'Вход', en: 'Intro' },
+    work: { ru: 'Проекты', en: 'Work' },
     about: { ru: 'Обо мне', en: 'About' },
-    cases: { ru: 'Кейсы', en: 'Cases' },
-    capabilities: { ru: 'Возможности', en: 'Capabilities' },
-    contact: { ru: 'Контакты', en: 'Contact' },
+    contact: { ru: 'Контакт', en: 'Contact' },
   },
   hero: {
-    eyebrow: { ru: 'Личное портфолио и витрина экспериментов', en: 'Personal portfolio and experiment showcase' },
-    titleA: { ru: 'Георгий', en: 'Georgiy' },
-    titleB: { ru: 'Сушинский', en: 'Sushinsky' },
+    status: { ru: 'Открыт к задачам', en: 'Available for work' },
+    title1: { ru: 'ДЕЛАЮ', en: 'I BUILD' },
+    title2: { ru: 'ИНТЕРФЕЙСЫ,', en: 'INTERFACES,' },
+    title3: { ru: 'КОТОРЫЕ', en: 'THAT' },
+    title4: { ru: 'ХОЧЕТСЯ ТРОГАТЬ', en: 'WANT TO BE TOUCHED' },
     lead: {
-      ru: 'Собираю интерфейсы, где композиция, свет и движение работают вместе с задачей. Этот сайт — и резюме, и живая демонстрация того, как я думаю о материале экрана.',
-      en: 'I build interfaces where composition, light, and motion work with the task, not against it. This site is both a résumé and a live demonstration of how I think about screen material.',
+      ru: 'Георгий Сушинский. Проектирую и собираю цифровые вещи: от плагинов и интерфейсных систем до интерактивных сцен. Здесь не рассказ о проектах — сами проекты.',
+      en: 'Georgiy Sushinsky. I design and build digital things: from plugins and interface systems to interactive scenes. Not stories about projects — the projects themselves.',
     },
-    cue: { ru: 'Листайте — главы раскрываются по ходу движения', en: 'Scroll — chapters unfold as you move' },
+    scroll: { ru: 'Скролл', en: 'Scroll' },
+  },
+  work: {
+    label: { ru: 'Избранное', en: 'Selected work' },
+    title: { ru: 'ПРОЕКТЫ', en: 'PROJECTS' },
+    hint: { ru: 'Каждый проект — живой. Наведи, покрути, потяни.', en: 'Every project is live. Hover, drag, interact.' },
   },
   about: {
-    eyebrow: { ru: 'Позиция', en: 'Stance' },
-    title: { ru: 'Каркас для смысла, поток для ощущения', en: 'A frame for meaning, a flow for feeling' },
-    lead: {
-      ru: 'Мне интересны интерфейсы, в которых видно устройство: где структура держит внимание, а переходы объясняют, что изменилось. Я работаю на стыке визуального решения и фронтенд-реализации.',
-      en: 'I’m drawn to interfaces with visible structure: where layout holds attention and transitions explain what changed. I work between visual decisions and front-end implementation.',
+    label: { ru: 'Резюме', en: 'Resume' },
+    title: { ru: 'НЕ ПРО СЛОВА', en: 'NOT ABOUT WORDS' },
+    body: {
+      ru: 'Мне интересно, когда интерфейс — это не набор карточек, а вещь с характером. Я работаю на стыке дизайна и кода: рисую, собираю, анимирую, довожу до состояния, в котором всё нажимается и движется как надо. Люблю сложную графику, странные композиции и аккуратную реализацию.',
+      en: 'I care about interfaces that feel like objects, not card grids. I work between design and code: sketch, build, animate, and polish until everything clicks and moves right. I like heavy graphics, odd compositions, and clean implementation.',
     },
-    points: [
-      {
-        title: { ru: 'Интерфейс как среда', en: 'Interface as an environment' },
-        text: {
-          ru: 'Экран воспринимаю как пространство со слоями, глубиной и правилами поведения, а не как набор независимых блоков.',
-          en: 'I treat the screen as a space with layers, depth, and rules of behavior — not as a stack of unrelated blocks.',
-        },
-      },
-      {
-        title: { ru: 'Эффект с опорой', en: 'Effect with a reason' },
-        text: {
-          ru: 'Анимация и свет нужны там, где они помогают прочитать состояние, выделить главное или задать ритм.',
-          en: 'Motion and light belong where they clarify state, mark what matters, or set rhythm.',
-        },
-      },
-      {
-        title: { ru: 'От идеи до сборки', en: 'From idea to build' },
-        text: {
-          ru: 'Довожу замысел до работающего результата: от композиции и токенов до интерактива и аккуратной реализации.',
-          en: 'I carry an idea through to a working result: from composition and tokens to interaction and careful implementation.',
-        },
-      },
-    ],
-  },
-  cases: {
-    eyebrow: { ru: 'Кейсы и прототипы', en: 'Cases and prototypes' },
-    title: { ru: 'Проекты, которые можно рассмотреть', en: 'Projects you can inspect' },
-    lead: {
-      ru: 'Один проект — реальный, остальные — концепты-прототипы, собранные специально для этой витрины. Их можно заменить вашими кейсами, сохранив подачу. У каждого есть живой фрагмент, а не только описание.',
-      en: 'One project is real; the rest are concept prototypes built for this showcase. You can replace them with your own cases while keeping the presentation. Each one includes a live fragment, not just a description.',
+    skills: {
+      ru: ['TypeScript', 'WebGL / Three.js', 'GSAP', 'CSS / дизайн-системы', 'Figma', 'Blender / рендер', 'UI-прототипирование'],
+      en: ['TypeScript', 'WebGL / Three.js', 'GSAP', 'CSS / design systems', 'Figma', 'Blender / render', 'UI prototyping'],
     },
-    realLabel: { ru: 'Реальный проект', en: 'Real project' },
-    conceptLabel: { ru: 'Концепт-прототип (заменю своим)', en: 'Concept prototype (to be replaced)' },
-  },
-  capabilities: {
-    eyebrow: { ru: 'Что показывает этот сайт', en: 'What this site demonstrates' },
-    title: { ru: 'Возможности, собранные в одном месте', en: 'Capabilities gathered in one place' },
-    lead: {
-      ru: 'Страница устроена как опыт: сцена, типографика, темы и навигация связаны между собой и реагируют на действия посетителя.',
-      en: 'The page is built as an experience: scene, typography, themes, and navigation are connected and respond to the visitor.',
-    },
-    items: [
-      { title: { ru: 'Живая WebGL-сцена', en: 'Live WebGL scene' }, text: { ru: 'Шейдерный фон с геометрией и текучим светом, реагирующий на скролл, курсор и выбранную тему.', en: 'A shader background with geometry and fluid light that responds to scroll, pointer, and the selected theme.' } },
-      { title: { ru: 'Скролл-повествование', en: 'Scroll narrative' }, text: { ru: 'Главы раскрываются последовательно: движение связывает разделы вместо набора разрозненных экранов.', en: 'Chapters unfold in sequence: motion connects sections instead of presenting isolated screens.' } },
-      { title: { ru: 'Светлая и тёмная темы', en: 'Light and dark themes' }, text: { ru: 'Два состояния освещения одной системы. Палитра и материалы меняются, характер — сохраняется.', en: 'Two lighting states of one system. Palette and materials shift while the character stays consistent.' } },
-      { title: { ru: 'Два языка', en: 'Two languages' }, text: { ru: 'Русский по умолчанию и наглядное переключение на английский прямо в интерфейсе.', en: 'Russian by default with a clear, in-place switch to English.' } },
-      { title: { ru: 'Процедурная вариативность', en: 'Procedural variation' }, text: { ru: 'Параметры сцены получают зерно при каждом заходе: облик знакомый, детали — каждый раз свои.', en: 'Scene parameters receive a seed on each visit: familiar character, slightly different details every time.' } },
-      { title: { ru: 'Быстрый переход', en: 'Quick jump' }, text: { ru: 'Ненавязчивая командная палитра (Ctrl/Cmd+K) для перехода к главам, кейсам и контактам.', en: 'An unobtrusive command palette (Ctrl/Cmd+K) to jump to chapters, cases, and contacts.' } },
-    ],
   },
   contact: {
-    eyebrow: { ru: 'Связь', en: 'Contact' },
-    title: { ru: 'Написать или посмотреть профиль', en: 'Get in touch or view profiles' },
-    lead: {
-      ru: 'Открыт к диалогу о проектах, интерфейсах и визуальных экспериментах. Ниже — прямые ссылки.',
-      en: 'Open to conversations about projects, interfaces, and visual experiments. Direct links below.',
-    },
-    email: { ru: 'Почта', en: 'Email' },
-    telegram: { ru: 'Telegram', en: 'Telegram' },
-    github: { ru: 'GitHub', en: 'GitHub' },
+    label: { ru: 'Связаться', en: 'Contact' },
+    title: { ru: 'СДЕЛАЕМ ЧТО-ТО', en: "LET'S MAKE SOMETHING" },
+    title2: { ru: 'НЕНУДНОЕ', en: 'NOT BORING' },
+    mail: { ru: 'Почта', en: 'Email' },
+    tg: { ru: 'Телеграм', en: 'Telegram' },
+    gh: { ru: 'Гитхаб', en: 'GitHub' },
     support: { ru: 'Поддержать (демо)', en: 'Support (demo)' },
-    supportNote: {
-      ru: 'Демо-кнопка: открывает главную страницу сервиса, без адресата перевода. Никому ничего не отправится.',
-      en: 'Demo button: opens the service home page with no recipient. Nothing will be sent to anyone.',
-    },
-  },
-  palette: {
-    open: { ru: 'Открыть быстрый переход', en: 'Open quick jump' },
-    placeholder: { ru: 'Перейти к разделу или кейсу…', en: 'Jump to a section or case…' },
-    hint: { ru: 'Enter — перейти · Esc — закрыть', en: 'Enter — go · Esc — close' },
-    theme: { ru: 'Переключить тему', en: 'Toggle theme' },
+    supportNote: { ru: 'Демо-ссылка, без адресата.', en: 'Demo link, no recipient.' },
   },
   footer: {
-    note: {
-      ru: 'Георгий Сушинский. Сайт-портфолио и живая витрина. Концепт-кейсы помечены и ждут замены на ваши проекты.',
-      en: 'Georgiy Sushinsky. Portfolio site and live showcase. Concept cases are marked and ready to be replaced with your projects.',
-    },
+    made: { ru: 'Собрано руками, не шаблоном', en: 'Built by hand, not template' },
   },
 }
 
 export const cases: CaseItem[] = [
   {
-    id: 'glassmorphism-v2',
-    number: '01',
-    kind: 'real',
+    id: 'glassmorphism',
+    index: '01',
+    year: '2025',
     title: { ru: 'Glassmorphism v2', en: 'Glassmorphism v2' },
-    subtitle: { ru: 'Плагин визуальной кастомизации для OpenCode Desktop', en: 'Visual customization plugin for OpenCode Desktop' },
-    summary: {
-      ru: 'Переработка плагина для OpenCode Desktop 2.3.2: единый стеклянный материал, собственные обои и шрифты, экранная клавиатура и эмодзи, переключаемые модули и встраивание в композер — с упором на цельность и приемлемую нагрузку.',
-      en: 'A rework of a plugin for OpenCode Desktop 2.3.2: a unified glass material, custom wallpapers and fonts, an on-screen keyboard and emoji, toggleable modules, and composer integration — with attention to coherence and reasonable cost.',
+    kind: { ru: 'Плагин для OpenCode Desktop', en: 'OpenCode Desktop plugin' },
+    description: {
+      ru: 'Настоящий плагин: стеклянные поверхности, обои, шрифты, экранная клавиатура, эмодзи и переключаемые модули. Не мокап — рабочая вещь.',
+      en: 'A real plugin: glass surfaces, wallpapers, fonts, on-screen keyboard, emoji, and toggleable modules. Not a mockup — a working thing.',
     },
-    role: { ru: 'Дизайн системы поверхностей · фронтенд-реализация', en: 'Surface system design · front-end implementation' },
-    points: {
-      ru: [
-        'Единый визуальный материал (glass / liquid glass) для панелей, меню и композера при разной степени прозрачности.',
-        'Модули «Обои», «Клавиатура», «Смайлики», «Переливания» с реальным включением и выключением поведения.',
-        'Экранная клавиатура, панель эмодзи, управление обоями и шрифтами в компактной панели настроек.',
-        'GUI-бандл и сборка через PowerShell-скрипт; плагин регистрирует русскую контекстную инструкцию в сессии.',
-      ],
-      en: [
-        'A unified visual material (glass / liquid glass) for panels, menus, and the composer with varying transparency.',
-        '“Wallpapers”, “Keyboard”, “Emoji”, and “Motion” modules that actually enable and disable behavior.',
-        'On-screen keyboard, emoji panel, wallpaper and font management inside a compact settings panel.',
-        'GUI bundle built via a PowerShell script; the plugin registers a Russian context instruction for the session.',
-      ],
-    },
-    tags: ['TypeScript', 'CSS', 'OpenCode Desktop', 'UI system'],
+    stack: ['TypeScript', 'CSS', 'OpenCode'],
+    media: '/media/glass.mp4',
+    poster: '/media/glass-poster.jpg',
+    link: 'https://github.com/MolokoNeKruto',
+    linkLabel: { ru: 'GitHub', en: 'GitHub' },
   },
   {
-    id: 'spectrum',
-    number: '02',
-    kind: 'concept',
-    title: { ru: 'Спектр', en: 'Spectrum' },
-    subtitle: { ru: 'Среда визуальных тем и токенов', en: 'An environment for visual themes and tokens' },
-    summary: {
-      ru: 'Концепт системы, где палитра, свет и контраст настраиваются как параметры живой сцены. Тема перестаёт быть статичной таблицей и становится инструментом, который можно потрогать.',
-      en: 'A concept system where palette, light, and contrast are tuned as parameters of a living scene. A theme stops being a static table and becomes something you can handle.',
+    id: 'poster-lab',
+    index: '02',
+    year: '2026',
+    title: { ru: 'POSTER LAB', en: 'POSTER LAB' },
+    kind: { ru: 'Интерактивный генератор плакатов', en: 'Interactive poster generator' },
+    description: {
+      ru: 'Живой инструмент прямо на странице: меняй типографику, сетку, шум и цвет — получай плакат. Это не скриншот, это работает.',
+      en: 'A live tool right on the page: change type, grid, noise, and color — get a poster. Not a screenshot, it works.',
     },
-    role: { ru: 'Проектирование токенов · интерактивный прототип', en: 'Token design · interactive prototype' },
-    points: {
-      ru: [
-        'Общий подтон для светлого и тёмного состояний, чтобы мир не распадался на два разных сайта.',
-        'Акцент работает как подсветка материала, а не как плоская заливка.',
-        'Предпросмотр показывает, как решение ведёт себя в движении и на разных поверхностях.',
-      ],
-      en: [
-        'A shared undertone for light and dark states so the world doesn’t split into two different sites.',
-        'Accent behaves like material lighting rather than a flat fill.',
-        'The preview shows how a choice behaves in motion and across surfaces.',
-      ],
-    },
-    tags: ['Design tokens', 'Color', 'Prototype'],
+    stack: ['Canvas', 'Type', 'Generative'],
+    media: '/media/poster.mp4',
+    poster: '/media/poster-poster.jpg',
   },
   {
-    id: 'gran',
-    number: '03',
-    kind: 'concept',
-    title: { ru: 'Грань', en: 'Facet' },
-    subtitle: { ru: 'Интерфейс, собранный из слоёв', en: 'An interface assembled from layers' },
-    summary: {
-      ru: 'Эксперимент с подачей контента без привычной ленты блоков: сведения раскрываются через геометрию, глубину и смещение, сохраняя читаемость и фокус.',
-      en: 'An experiment in presenting content without a familiar block feed: information unfolds through geometry, depth, and offset while keeping focus and legibility.',
+    id: 'signal',
+    index: '03',
+    year: '2026',
+    title: { ru: 'SIGNAL', en: 'SIGNAL' },
+    kind: { ru: 'Аудио-реактивная сцена', en: 'Audio-reactive scene' },
+    description: {
+      ru: '3D-объект, который реагирует на звук и движение мыши. Включи микрофон или просто води курсором — сцена отвечает.',
+      en: 'A 3D object reacting to sound and mouse movement. Enable mic or just move cursor — the scene responds.',
     },
-    role: { ru: 'Композиция · motion-дизайн · вёрстка', en: 'Composition · motion design · layout' },
-    points: {
-      ru: [
-        'Слои разделяют смысловые уровни вместо декоративного нагромождения.',
-        'Переходы объясняют связь между состояниями, а не отвлекают от них.',
-        'Геометрический каркас удерживает ритм даже при активном движении.',
-      ],
-      en: [
-        'Layers separate levels of meaning instead of piling on decoration.',
-        'Transitions explain the relation between states rather than distracting from them.',
-        'A geometric frame keeps rhythm even when motion is active.',
-      ],
-    },
-    tags: ['Interaction', 'Layout', 'Motion'],
+    stack: ['WebGL', 'Audio', 'Shader'],
+    media: '/media/signal.mp4',
+    poster: '/media/signal-poster.jpg',
   },
   {
-    id: 'kontur',
-    number: '04',
-    kind: 'concept',
-    title: { ru: 'Контур', en: 'Contour' },
-    subtitle: { ru: 'Инструменты и автоматизация с обратной связью', en: 'Tooling and automation with feedback' },
-    summary: {
-      ru: 'Инженерный концепт: процесс сборки и проверок представлен как понятный контур. Каждый шаг отдаёт статус, чтобы результат был наблюдаемым, а не скрытым за командами.',
-      en: 'An engineering concept: build and check flow presented as a clear contour. Each step reports status so the outcome is observable, not hidden behind commands.',
+    id: 'type-machine',
+    index: '04',
+    year: '2026',
+    title: { ru: 'TYPE MACHINE', en: 'TYPE MACHINE' },
+    kind: { ru: 'Кинетическая типографика', en: 'Kinetic typography' },
+    description: {
+      ru: 'Печатай — и буквы становятся физикой. Тяни, бросай, ломай строку. Маленькая машина для игры со шрифтом.',
+      en: 'Type — and letters become physics. Drag, throw, break the line. A small machine for playing with type.',
     },
-    role: { ru: 'Проектирование процесса · UI для статусов', en: 'Process design · status UI' },
-    points: {
-      ru: [
-        'Цепочка «план → сборка → проверка → выпуск» как наглядная модель.',
-        'Состояния шагов различимы по форме и свету, без опоры на один цвет.',
-        'Журнал событий фиксирует, что именно произошло и где процесс сейчас.',
-      ],
-      en: [
-        'A “plan → build → check → ship” chain as a visible model.',
-        'Step states differ by form and light, not by color alone.',
-        'An event log records what happened and where the process stands.',
-      ],
-    },
-    tags: ['Automation', 'DX', 'Visualization'],
-  },
-  {
-    id: 'sreda',
-    number: '05',
-    kind: 'concept',
-    title: { ru: 'Среда', en: 'Medium' },
-    subtitle: { ru: 'Продуктовый прототип цифрового пространства', en: 'A product prototype of a digital space' },
-    summary: {
-      ru: 'Концепт, в котором важнее сценарий и связи между объектами, чем отдельные экраны. Пространство показывает, как пользователь перемещается между узлами и задачами.',
-      en: 'A concept where scenario and links between objects matter more than individual screens. The space shows how a user moves between nodes and tasks.',
-    },
-    role: { ru: 'Продуктовое мышление · прототипирование', en: 'Product thinking · prototyping' },
-    points: {
-      ru: [
-        'Узлы и связи делают маршрут пользователя видимым.',
-        'Фокус и контекст меняются мягко, сохраняя ориентацию.',
-        'Геометрическая сетка задаёт порядок, текучие акценты — направление.',
-      ],
-      en: [
-        'Nodes and links make the user path visible.',
-        'Focus and context shift gently to preserve orientation.',
-        'A geometric grid sets order; fluid accents suggest direction.',
-      ],
-    },
-    tags: ['Product concept', 'Systems', 'Prototype'],
+    stack: ['Matter.js', 'Type', 'Interactive'],
+    media: '/media/type.mp4',
+    poster: '/media/type-poster.jpg',
   },
 ]

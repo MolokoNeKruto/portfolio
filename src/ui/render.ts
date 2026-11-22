@@ -1,228 +1,178 @@
 import { cases, site, ui, type Lang } from '../data/content'
 
-interface State {
+export interface ViewState {
   lang: Lang
-  theme: 'light' | 'dark'
-  reducedMotion: boolean
+  theme: 'dark' | 'light'
 }
 
 function esc(s: string): string {
-  return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] as string))
+  return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] || c))
 }
 
-function demoMarkup(id: string, lang: Lang): string {
-  switch (id) {
-    case 'glassmorphism-v2':
-      return `
-        <div class="case-demo demo-glass" aria-label="${lang === 'ru' ? 'Демо интерфейса Glassmorphism v2' : 'Glassmorphism v2 interface demo'}">
-          <div class="demo-bar"><span class="demo-dot"></span><span class="demo-dot"></span><span class="demo-pill"></span></div>
-          <div class="demo-sheet">
-            <div class="demo-row" style="width:92%"></div>
-            <div class="demo-row short"></div>
-            <div class="demo-row" style="width:78%"></div>
-          </div>
-          <div class="demo-modules" role="list" aria-label="${lang === 'ru' ? 'Модули' : 'Modules'}">
-            <span role="listitem">${lang === 'ru' ? 'Обои' : 'Wallpapers'}</span>
-            <span role="listitem">${lang === 'ru' ? 'Клавиатура' : 'Keyboard'}</span>
-            <span role="listitem">${lang === 'ru' ? 'Смайлики' : 'Emoji'}</span>
-            <span role="listitem">${lang === 'ru' ? 'Переливания' : 'Motion'}</span>
-          </div>
-        </div>`
-    case 'spectrum':
-      return `
-        <div class="case-demo demo-spectrum" data-demo="spectrum">
-          <div class="spectrum-orb" aria-hidden="true"></div>
-          <div class="spectrum-ui">
-            <button type="button" data-swatch="cool" aria-pressed="true">${lang === 'ru' ? 'Холодный' : 'Cool'}</button>
-            <button type="button" data-swatch="warm" aria-pressed="false">${lang === 'ru' ? 'Тёплый' : 'Warm'}</button>
-            <button type="button" data-swatch="balance" aria-pressed="false">${lang === 'ru' ? 'Баланс' : 'Balance'}</button>
-          </div>
-        </div>`
-    case 'gran':
-      return `
-        <div class="case-demo demo-edge" aria-hidden="true">
-          <div class="edge-layer"></div>
-          <div class="edge-layer"></div>
-          <div class="edge-layer"></div>
-          <div class="edge-layer"></div>
-        </div>`
-    case 'kontur':
-      return `
-        <div class="case-demo demo-contour" data-demo="contour">
-          <div class="flow" aria-hidden="true">
-            <span class="active">${lang === 'ru' ? 'План' : 'Plan'}</span>
-            <span>${lang === 'ru' ? 'Сборка' : 'Build'}</span>
-            <span>${lang === 'ru' ? 'Проверка' : 'Check'}</span>
-            <span>${lang === 'ru' ? 'Выпуск' : 'Ship'}</span>
-          </div>
-          <div class="flow-log" aria-live="polite">${lang === 'ru' ? 'Шаг 1/4: план зафиксирован.' : 'Step 1/4: plan captured.'}</div>
-        </div>`
-    case 'sreda':
-      return `
-        <div class="case-demo demo-space" aria-hidden="true">
-          <div class="space-grid">
-            <span class="space-node n1" style="left:18%;top:22%"></span>
-            <span class="space-node n2" style="left:55%;top:38%"></span>
-            <span class="space-node n3" style="left:36%;top:62%"></span>
-          </div>
-        </div>`
-    default:
-      return `<div class="case-demo"></div>`
+function projectMedia(c: typeof cases[number], lang: Lang): string {
+  const badge = `<span class="media-badge">${esc(c.kind[lang])}</span>`
+  if (c.id === 'poster-lab') {
+    return `
+      <div class="live-demo" data-demo="poster">
+        <canvas id="poster-canvas"></canvas>
+        <div class="live-demo-ui">
+          <button class="demo-btn active" data-poster="grid">GRID</button>
+          <button class="demo-btn" data-poster="chaos">CHAOS</button>
+          <button class="demo-btn" data-poster="type">TYPE</button>
+          <button class="demo-btn" data-poster="shift">SHIFT</button>
+          <span class="demo-label">${lang === 'ru' ? 'Живой демо' : 'Live demo'}</span>
+        </div>
+      </div>`
   }
+  if (c.id === 'signal') {
+    return `
+      <div class="live-demo" data-demo="signal">
+        <canvas id="signal-canvas"></canvas>
+        <div class="live-demo-ui">
+          <button class="demo-btn active" data-signal="mesh">MESH</button>
+          <button class="demo-btn" data-signal="points">POINTS</button>
+          <button class="demo-btn" data-signal="wire">WIRE</button>
+          <span class="demo-label">${lang === 'ru' ? 'Двигай мышью / включи микрофон' : 'Move mouse / enable mic'}</span>
+        </div>
+      </div>`
+  }
+  if (c.id === 'type-machine') {
+    return `
+      <div class="live-demo" data-demo="type">
+        <canvas id="type-canvas"></canvas>
+        <div class="live-demo-ui">
+          <button class="demo-btn" id="type-reset">${lang === 'ru' ? 'СБРОС' : 'RESET'}</button>
+          <button class="demo-btn" id="type-gravity">${lang === 'ru' ? 'ГРАВИТАЦИЯ' : 'GRAVITY'}</button>
+          <span class="demo-label">${lang === 'ru' ? 'Печатай на клавиатуре' : 'Type on keyboard'}</span>
+        </div>
+      </div>`
+  }
+  // default: video render
+  return `
+    <div class="project-media">
+      ${badge}
+      <video src="${esc(c.media)}" poster="${esc(c.poster)}" muted loop playsinline autoplay preload="metadata"></video>
+      <div class="media-overlay"></div>
+    </div>`
 }
 
-export function renderApp(root: HTMLElement, state: State): void {
+export function renderApp(root: HTMLElement, state: ViewState): void {
   const { lang, theme } = state
   const t = ui
-  const navItems = [
-    { id: 'hero', label: t.nav.hero[lang] },
-    { id: 'about', label: t.nav.about[lang] },
-    { id: 'cases', label: t.nav.cases[lang] },
-    { id: 'capabilities', label: t.nav.capabilities[lang] },
-    { id: 'contact', label: t.nav.contact[lang] },
-  ]
+  const otherLang = lang === 'ru' ? 'en' : 'ru'
 
   root.innerHTML = `
-    <header class="topbar glass" role="banner">
-      <div class="brand">
-        <span class="brand-mark">${esc(site.owner.name)}</span>
-        <span class="brand-role">${esc(site.owner.roles[lang])}</span>
-      </div>
-      <div class="top-actions">
-        <div class="lang-switch" role="group" aria-label="${lang === 'ru' ? 'Язык' : 'Language'}">
-          <button type="button" data-lang="ru" aria-pressed="${lang === 'ru'}">RU</button>
-          <button type="button" data-lang="en" aria-pressed="${lang === 'en'}">EN</button>
+    <nav class="nav" id="nav">
+      <div class="nav-inner">
+        <a class="brand" href="#top" aria-label="Georgiy Sushinsky"><span>GS</span> / ${lang === 'ru' ? 'Портфолио' : 'Portfolio'}</a>
+        <div class="nav-links">
+          <a href="#work" data-nav="work">${esc(t.nav.work[lang])}</a>
+          <a href="#about" data-nav="about">${esc(t.nav.about[lang])}</a>
+          <a href="#contact" data-nav="contact">${esc(t.nav.contact[lang])}</a>
         </div>
-        <button type="button" class="btn icon-btn" data-action="theme" aria-label="${esc(t.palette.theme[lang])}" title="${esc(t.palette.theme[lang])}">
-          <span aria-hidden="true">${theme === 'dark' ? '☀' : '◐'}</span>
-        </button>
-        <button type="button" class="btn" data-action="palette" aria-label="${esc(t.palette.open[lang])}">${lang === 'ru' ? 'Переход' : 'Jump'} <span class="muted small">Ctrl+K</span></button>
+        <div class="nav-controls">
+          <button class="pill" data-lang-switch aria-label="${lang === 'ru' ? 'Switch to English' : 'Переключить на русский'}">${otherLang.toUpperCase()}</button>
+          <button class="pill" data-theme-switch aria-label="${lang === 'ru' ? 'Сменить тему' : 'Toggle theme'}" aria-pressed="${theme === 'light'}">${theme === 'dark' ? 'LIGHT' : 'DARK'}</button>
+        </div>
       </div>
-    </header>
-
-    <nav class="chapter-nav" aria-label="${lang === 'ru' ? 'Главы' : 'Chapters'}">
-      ${navItems.map((n) => `<a href="#${n.id}" data-nav="${n.id}" aria-label="${esc(n.label)}"><span>${esc(n.label)}</span></a>`).join('')}
     </nav>
 
-    <main id="main">
-      <section id="hero" class="chapter hero shell" data-chapter>
-        <div class="hero-grid">
+    <main id="top">
+      <section class="hero" aria-label="Hero">
+        <canvas id="hero-canvas" aria-hidden="true"></canvas>
+        <div class="hero-overlay" aria-hidden="true"></div>
+        <div class="hero-content">
+          <div class="hero-status reveal">${esc(t.hero.status[lang])}</div>
+          <h1 class="hero-title" aria-label="${esc(site.name)}">
+            <span class="line"><span>${esc(t.hero.title1[lang])}</span></span>
+            <span class="line"><span>${esc(t.hero.title2[lang])}</span></span>
+            <span class="line"><span>${esc(t.hero.title3[lang])}</span></span>
+            <span class="line"><span class="accent">${esc(t.hero.title4[lang])}</span></span>
+          </h1>
+          <div class="hero-bottom">
+            <p class="hero-lead reveal">${esc(t.hero.lead[lang])}</p>
+            <div class="hero-scroll reveal" aria-hidden="true"><span class="bar"></span>${esc(t.hero.scroll[lang])}</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section shell" id="work" aria-labelledby="work-title">
+        <div class="section-head">
           <div>
-            <p class="eyebrow reveal">${esc(t.hero.eyebrow[lang])}</p>
-            <h1 class="reveal">
-              <span class="line">${esc(t.hero.titleA[lang])}</span>
-              <span class="line accent">${esc(t.hero.titleB[lang])}</span>
-            </h1>
-            <p class="lead reveal">${esc(t.hero.lead[lang])}</p>
-            <div class="scroll-cue reveal"><i aria-hidden="true"></i><span>${esc(t.hero.cue[lang])}</span></div>
+            <div class="label reveal">${esc(t.work.label[lang])}</div>
+            <h2 class="section-title reveal" id="work-title">${esc(t.work.title[lang])}</h2>
           </div>
-          <div class="hero-meta reveal">
-            <div class="hero-tags">
-              <span class="chip">RU / EN</span>
-              <span class="chip">${lang === 'ru' ? 'Светлая и тёмная тема' : 'Light & dark theme'}</span>
-              <span class="chip">WebGL</span>
-              <span class="chip">${lang === 'ru' ? 'Живые кейсы' : 'Live cases'}</span>
-            </div>
-            <div class="glass panel">
-              <p class="small" style="margin:0">${lang === 'ru'
-                ? 'Эта страница собрана как резюме: рассказывает о проектах и одновременно показывает, как я работаю с композицией, движением и интерфейсом.'
-                : 'This page works as a résumé: it presents projects while showing how I handle composition, motion, and interface.'}</p>
-            </div>
-          </div>
+          <p class="section-hint reveal">${esc(t.work.hint[lang])}</p>
         </div>
-      </section>
-
-      <section id="about" class="chapter shell" data-chapter>
-        <div class="chapter-header">
-          <p class="eyebrow reveal">${esc(t.about.eyebrow[lang])}</p>
-          <h2 class="reveal">${esc(t.about.title[lang])}</h2>
-          <p class="lead reveal">${esc(t.about.lead[lang])}</p>
-        </div>
-        <div class="split">
-          <div class="glass panel reveal">
-            <h3>${esc(site.owner.name)}</h3>
-            <p class="muted" style="margin:.5rem 0 0">${esc(site.owner.roles[lang])}</p>
-          </div>
-          <div class="glass panel reveal">
-            <ul class="about-points">
-              ${t.about.points.map((p) => `<li><strong>${esc(p.title[lang])}</strong><span class="muted">${esc(p.text[lang])}</span></li>`).join('')}
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section id="cases" class="chapter shell" data-chapter>
-        <div class="chapter-header">
-          <p class="eyebrow reveal">${esc(t.cases.eyebrow[lang])}</p>
-          <h2 class="reveal">${esc(t.cases.title[lang])}</h2>
-          <p class="lead reveal">${esc(t.cases.lead[lang])}</p>
-        </div>
-        <div class="cases-grid">
-          ${cases.map((c, i) => `
-            <article class="case-card glass reveal ${i === 0 ? 'featured' : ''}" id="case-${esc(c.id)}" data-case="${esc(c.id)}">
-              <div>
-                <div class="case-head">
-                  <span class="chip">${esc(c.number)}</span>
-                  <span class="chip">${esc(c.kind === 'real' ? t.cases.realLabel[lang] : t.cases.conceptLabel[lang])}</span>
-                </div>
-                <h3 style="margin:.7rem 0 .25rem">${esc(c.title[lang])}</h3>
-                <p class="muted">${esc(c.subtitle[lang])}</p>
-                <p style="margin-top:.7rem">${esc(c.summary[lang])}</p>
-                <p class="small" style="margin-top:.6rem"><strong>${lang === 'ru' ? 'Роль/фокус:' : 'Role/focus:'}</strong> ${esc(c.role[lang])}</p>
-                <ul class="case-points">${c.points[lang].map((pt) => `<li>${esc(pt)}</li>`).join('')}</ul>
-                <div class="case-meta" style="margin-top:.7rem">${c.tags.map((tag) => `<span class="chip">${esc(tag)}</span>`).join('')}</div>
+        <div class="projects">
+          ${cases.map((c) => `
+            <article class="project reveal" id="project-${esc(c.id)}">
+              <div class="project-index">${esc(c.index)}</div>
+              <div class="project-meta">
+                <div class="project-kind"><span>${esc(c.kind[lang])}</span><span class="year">${esc(c.year)}</span></div>
+                <h3 class="project-name">${esc(c.title[lang])}</h3>
+                <p class="project-desc">${esc(c.description[lang])}</p>
+                <div class="project-stack">${c.stack.map((s) => `<span class="tag">${esc(s)}</span>`).join('')}</div>
+                ${c.link ? `<a class="project-link" href="${esc(c.link)}" target="_blank" rel="noopener noreferrer">${esc(c.linkLabel?.[lang] || 'Link')}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg></a>` : ''}
               </div>
-              ${demoMarkup(c.id, lang)}
+              ${projectMedia(c, lang)}
             </article>
           `).join('')}
         </div>
       </section>
 
-      <section id="capabilities" class="chapter shell" data-chapter>
-        <div class="chapter-header">
-          <p class="eyebrow reveal">${esc(t.capabilities.eyebrow[lang])}</p>
-          <h2 class="reveal">${esc(t.capabilities.title[lang])}</h2>
-          <p class="lead reveal">${esc(t.capabilities.lead[lang])}</p>
+      <section class="section shell" id="about" aria-labelledby="about-title">
+        <div class="section-head">
+          <div>
+            <div class="label reveal">${esc(t.about.label[lang])}</div>
+            <h2 class="section-title reveal" id="about-title">${esc(t.about.title[lang])}</h2>
+          </div>
         </div>
-        <div class="cap-grid">
-          ${t.capabilities.items.map((it) => `
-            <article class="cap glass reveal"><h3>${esc(it.title[lang])}</h3><p>${esc(it.text[lang])}</p></article>
-          `).join('')}
+        <div class="about-grid">
+          <div class="about-text reveal">
+            <p><strong>${esc(site.name)}</strong> — ${esc(site.role[lang])}.</p>
+            <p>${esc(t.about.body[lang])}</p>
+          </div>
+          <div class="skills reveal" aria-label="${lang === 'ru' ? 'Навыки' : 'Skills'}">
+            ${t.about.skills[lang].map((s) => `<span class="skill">${esc(s)}</span>`).join('')}
+          </div>
+        </div>
+        <div class="about-manifesto reveal">
+          ${lang === 'ru' ? 'Меньше шаблонов. <em>Больше характера.</em>' : 'Less template. <em>More character.</em>'}
         </div>
       </section>
 
-      <section id="contact" class="chapter shell" data-chapter>
-        <div class="chapter-header">
-          <p class="eyebrow reveal">${esc(t.contact.eyebrow[lang])}</p>
-          <h2 class="reveal">${esc(t.contact.title[lang])}</h2>
-          <p class="lead reveal">${esc(t.contact.lead[lang])}</p>
-        </div>
+      <section class="section shell" id="contact" aria-labelledby="contact-title">
         <div class="contact-grid">
-          <div class="glass panel reveal">
-            <ul class="contact-list">
-              <li><a class="contact-link" href="${esc(site.contacts.emailHref)}"><div><strong>${esc(t.contact.email[lang])}</strong><br><span>${esc(site.contacts.email)}</span></div><span aria-hidden="true">→</span></a></li>
-              <li><a class="contact-link" href="${esc(site.contacts.telegramHref)}" target="_blank" rel="noopener noreferrer"><div><strong>${esc(t.contact.telegram[lang])}</strong><br><span>${esc(site.contacts.telegramLabel)}</span></div><span aria-hidden="true">↗</span></a></li>
-              <li><a class="contact-link" href="${esc(site.contacts.githubHref)}" target="_blank" rel="noopener noreferrer"><div><strong>${esc(t.contact.github[lang])}</strong><br><span>${esc(site.contacts.githubLabel)}</span></div><span aria-hidden="true">↗</span></a></li>
-            </ul>
+          <div>
+            <div class="label reveal">${esc(t.contact.label[lang])}</div>
+            <h2 class="section-title reveal" id="contact-title">${esc(t.contact.title[lang])}<br><em>${esc(t.contact.title2[lang])}</em></h2>
           </div>
-          <div class="glass panel reveal">
-            <h3>${esc(t.contact.support[lang])}</h3>
-            <p class="muted" style="margin:.5rem 0 1rem">${esc(t.contact.supportNote[lang])}</p>
-            <a class="btn btn-primary" href="${esc(site.contacts.supportHref)}" target="_blank" rel="noopener noreferrer">${esc(t.contact.support[lang])}</a>
-            <p class="support-note">${lang === 'ru' ? 'Переход на главную страницу сервиса. Адресата перевода нет.' : 'Goes to the service home page. No payment recipient is set.'}</p>
+          <div class="contact-links reveal">
+            <a class="contact-link" href="mailto:${esc(site.email)}">
+              <span class="c-label">${esc(t.contact.mail[lang])}</span>
+              <span class="c-val">${esc(site.email)}</span>
+            </a>
+            <a class="contact-link" href="${esc(site.telegram)}" target="_blank" rel="noopener noreferrer">
+              <span class="c-label">${esc(t.contact.tg[lang])}</span>
+              <span class="c-val">${esc(site.telegramLabel)}</span>
+            </a>
+            <a class="contact-link" href="${esc(site.github)}" target="_blank" rel="noopener noreferrer">
+              <span class="c-label">${esc(t.contact.gh[lang])}</span>
+              <span class="c-val">${esc(site.githubLabel)}</span>
+            </a>
+            <a class="contact-link" href="${esc(site.support)}" target="_blank" rel="noopener noreferrer">
+              <span class="c-label">${esc(t.contact.support[lang])}</span>
+              <span class="c-val">${esc(t.contact.supportNote[lang])}</span>
+            </a>
           </div>
         </div>
       </section>
     </main>
 
-    <footer class="shell"><p>${esc(t.footer.note[lang])}</p></footer>
-
-    <div class="cmdk-overlay" id="cmdk" aria-hidden="true">
-      <div class="cmdk glass" role="dialog" aria-modal="true" aria-label="${esc(t.palette.open[lang])}">
-        <input id="cmdk-input" type="text" autocomplete="off" role="combobox" aria-expanded="true" aria-controls="cmdk-list" aria-autocomplete="list" placeholder="${esc(t.palette.placeholder[lang])}" />
-        <ul class="cmdk-list" id="cmdk-list" role="listbox"></ul>
-        <p class="cmdk-hint">${esc(t.palette.hint[lang])}</p>
-      </div>
-    </div>
+    <footer class="footer shell">
+      <span>© ${new Date().getFullYear()} ${esc(site.name)}</span>
+      <span>${esc(t.footer.made[lang])}</span>
+    </footer>
   `
 }
